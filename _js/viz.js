@@ -16,11 +16,18 @@ var svg = d3.select("#viz").append("svg:svg")
 
 
 $(document).ready(function() {
+  // $.each(fullgame, function(i,d) {
+  //   if (d.text.search("Kravish") != -1) {
+  //     processPlay(d);
+  //   }
+  //   else {
+  //     d.event = '';
+  //   }
+  // })
 });
 
-
 x = d3.scale.linear().domain([0, 2400]).range([0, w]);
-y = d3.scale.linear().domain([-100, 100]).range([h, 0]);
+y = d3.scale.linear().domain([-20, 20]).range([h, 0]);
 var xAxis = d3.svg.axis().scale(x).ticks(0).tickSize(0,0);
 var yAxisLeft = d3.svg.axis().scale(y).ticks(0).tickSize(0,0).tickValues([0,25,50,75,100]).orient("left");
 
@@ -62,6 +69,51 @@ svg.append("line")
 	  "y2": h,
 	  'class': 'halftimeLine'
 });
+
+var line = d3.svg.line()
+      .x(function(d) {
+        return x(time_to_x(d.time));
+      })
+      .y(function(d) {
+        return y(d.margin);
+      })
+      .interpolate("monotone");
+
+svg.append('path')
+  .datum(fullgame)
+  .attr('class','line')
+  .attr("d",line);
+
+
+var bars = svg.selectAll('g')
+            .data(fullgame)
+            .enter()
+            .append('g')
+
+bars.append('rect')
+      .attr({
+        width:1,
+        height: function(d) {
+          if (d.text.search("Kravish") != -1)
+            return y(d.margin) - (h/2);
+          else
+            return y(0) - (h/2);
+        },
+        x: function(d) {
+          return x(time_to_x(d.time));
+        },
+        y: function(d) {
+          return h - y(d.margin);
+        },
+        class: function(d) {
+          if (d.text.search("Kravish") != -1)
+            return "kravish";
+        }
+      })
+      .on("mouseover", function(d) {
+        console.log(d.time+" - "+d.text);
+      });
+
 
 // x axis labels
 svg.append("text")
@@ -108,3 +160,16 @@ function time_to_x(timestr) {
 //   // scale is a % of the max 0.6977672 (caltrain at townsend and 4th)
 //   return y((d.s[stationindex].s / .6977672)*100); 
 // })
+
+// function processPlay(d) {
+
+//   if (d.text.search('made Jumper'))
+//     d.
+
+// }
+
+
+
+
+
+
