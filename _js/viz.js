@@ -9,6 +9,30 @@ var kravish = [
 ["20:00","11:59"],
 ["11:07","0:00"]];
 
+var playerevents = [
+  {
+    time: "39:00",
+    type: 1
+  },
+  {
+    time: "35:00",
+    type: 1
+  },
+  {
+    time: "30:00",
+    type: 2
+  },
+  {
+    time: "29:00",
+    type: 3
+  },
+  {
+    time: "9:00",
+    type: 3
+  },
+];
+
+
 var svg = d3.select("#viz").append("svg:svg")
       .attr("width", w + m[1] + m[3])
       .attr("height", h + m[0] + m[2])
@@ -19,16 +43,19 @@ $(document).ready(function() {
 });
 
 
+// draw axes
 x = d3.scale.linear().domain([0, 2400]).range([0, w]);
 y = d3.scale.linear().domain([-100, 100]).range([h, 0]);
 var xAxis = d3.svg.axis().scale(x).ticks(0).tickSize(0,0);
 var yAxisLeft = d3.svg.axis().scale(y).ticks(0).tickSize(0,0).tickValues([0,25,50,75,100]).orient("left");
 
+// x axis
 svg.append("svg:g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + h/2 + ")")
       .call(xAxis);
 
+// y axis
 svg.append("svg:g")
       .attr("class", "y y1 axis")
       .attr("transform", "translate(0,0)")
@@ -42,16 +69,34 @@ svg.selectAll('.playerbox')
 .enter()
 .append('rect')
 .attr('x', function(d) {
-	return (time_to_x(d[0]) / 2400.0) * w
+	return (time_to_elapsed_secs(d[0]) / 2400.0) * w
 })
 .attr('y', function(d) {
 	return 0;
 })
 .attr('height', h)
 .attr('width', function(d) {
-	return w * (time_to_x(d[1]) - time_to_x(d[0]))/2400.0
+	return w * (time_to_elapsed_secs(d[1]) - time_to_elapsed_secs(d[0]))/2400.0
 })
 .attr('class', 'playerbox');
+
+// add events
+svg.selectAll('.playerevents').remove();
+svg.selectAll('.playerevents')
+.data(playerevents)
+.enter()
+.append('circle')
+  .attr('cx',function(d){
+    return w* time_to_elapsed_secs(d.time)/2400;
+  })
+  .attr('cy',function(d){
+    return (h/2)-15;
+  })
+  .attr('r', function(d){
+    return 4;
+  })
+  .attr('class', 'playerevents');
+
 
 // halftime line
 svg.append("line")
@@ -91,7 +136,7 @@ svg.append("text")
 
 
 // # of seconds elapsed from the beginning of the game.
-function time_to_x(timestr) {
+function time_to_elapsed_secs(timestr) {
 	timesplit = timestr.split(":");
 	timeseconds = timesplit[0] * 60 + Number(timesplit[1]);
 	return 2400 - timeseconds;
