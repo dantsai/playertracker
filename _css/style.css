@@ -26,11 +26,22 @@ footer, header, hgroup, menu, nav, section {
 }
 body {
   line-height: 1;
-  margin: 100px auto;
+  margin: 0 auto;
 }
 #viz {
   margin: 20px ;
-  text-align: center;
+}
+
+#viz,
+#stats {
+  display: inline-block;
+  vertical-align: top;
+}
+
+#stats {
+  margin:15px;
+  text-align: left;
+  width: 200px;
 
 }
 
@@ -65,7 +76,7 @@ html, body, #map {
   padding: 0;
   font-family: "Verdana", sans-serif;
   /*font-size: 11px;*/
-  color: #fff;
+  /*color: #fff;*/
 }
 
 /* graphs */
@@ -152,11 +163,15 @@ path.score {
   stroke-width: 2.0px;
 }
 
-rect.kravish:hover {
+rect.gameplay:hover {
   cursor: pointer;
 }
 
 #textbox {
   color: blue;
   font-size: 20px;
+}
+
+#playHover {
+  fill: silver;
 }

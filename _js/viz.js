@@ -1,8 +1,10 @@
 var m = [35, 35, 35, 45]; // margins
-var w = 1200 - m[1] - m[3]; // width
+var w = 1000 - m[1] - m[3]; // width
 var h = 280 - m[0] - m[2]; // height
 var x, y, y1, y2;
-var lineHeight = 20;
+var lineHeight = 15;
+
+var selectPlayers = [];
 
 $.each(fullgame, function(i,d) {
   // if (d.text.search("Kravish") != -1 ) {
@@ -55,11 +57,7 @@ $(document).ready(function() {
   
 });
 
-<<<<<<< HEAD
-=======
-
 // draw axes
->>>>>>> master
 x = d3.scale.linear().domain([0, 2400]).range([0, w]);
 y = d3.scale.linear().domain([-20, 5]).range([h, 0]);
 var xAxis = d3.svg.axis().scale(x).ticks(0).tickSize(0,0);
@@ -166,7 +164,7 @@ bars.append('rect')
             }  
         },
         x: function(d) {
-          return x(time_to_x(d.time));
+          return x(time_to_elapsed_secs(d.time));
         },
         y: function(d) {
           if (d.event != '') {
@@ -178,8 +176,10 @@ bars.append('rect')
           // return h - y(d.margin);
         },
         class: function(d) {
+          var classes = 'gameplay '+d.team;
           if (d.text.search("Kravish") != -1)
-            return "kravish";
+            classes+= "kravish";
+          return classes;
         },
         fill: function(d) {
           if (d.event != '') {
@@ -193,13 +193,21 @@ bars.append('rect')
         }
       })
       .on("mouseover", function(d) {
+        playHover(d);
         console.log(d.time+" - "+d.text);
+      })
+      .on("mouseout",function(d) {
+        d3.select("div#playHover")
+            .attr({
+              'height':0,
+              'width':0
+            })
       });
 
 //Margin of victory line
 var line = d3.svg.line()
       .x(function(d) {
-        return x(time_to_x(d.time));
+        return x(time_to_elapsed_secs(d.time));
       })
       .y(function(d) {
         return y(d.margin);
@@ -237,6 +245,8 @@ svg.append("text")
   .attr("y", y(0) + 15)
   .text("10:00");
 
+svg.append('rect')
+    .attr('id','playHover');
 
 // # of seconds elapsed from the beginning of the game.
 function time_to_elapsed_secs(timestr) {
@@ -295,6 +305,98 @@ function processPlay(d) {
   // console.log(d);
 }
 
+
+function playHover(d) {
+  d3.select("rect#playHover")
+      .attr({
+        x: function() {
+          return x(time_to_elapsed_secs(d.time));
+        },
+        y: function() {
+          if (d.team =='CAL') {
+            return lineHeight;
+          } else {
+            return y(d.margin);
+          }
+        },
+        height: function() {
+          if (d.team == 'CAL') {
+            return y(d.margin) - lineHeight;
+          } else {
+            return h - y(d.margin) - lineHeight;
+          }
+          
+        },
+        width: 2
+      })
+}
+
+function drawGamePlay(lastname) {
+  svg.selectAll('rect.gameplay').remove();
+
+  var bars = svg.selectAll('g')
+          .data(fullgame)
+          .enter()
+          .append('g');
+
+  bars.append('rect')
+        .attr({
+          width:2,
+          height: function(d) {
+            if (d.event != '') {
+            //   //if (d.text.search("Kravish") != -1)
+            //   if (d.team == 'CAL') {
+            //     return y(d.margin) - (h/2);
+            //   }
+            //   else if (d.team =='STANFORD') {
+            //     return y(d.margin)-(h/2);
+            //   }
+            // }
+              return lineHeight;
+              }  
+          },
+          x: function(d) {
+            return x(time_to_elapsed_secs(d.time));
+          },
+          y: function(d) {
+            if (d.event != '') {
+              if (d.team =='CAL')
+                return 0;
+              else if(d.team == 'STANFORD')
+                return h - lineHeight;
+            }
+            // return h - y(d.margin);
+          },
+          class: function(d) {
+            var classes = 'gameplay '+d.team;
+            if (d.text.search("Kravish") != -1)
+              classes+= "kravish";
+            return classes;
+          },
+          fill: function(d) {
+            if (d.event != '') {
+              if ($.inArray(d.event,['3pt','Stl','2pts','Reb','OReb','FT','Block','Steal'])!=-1) {
+                return 'green';
+              }
+              else {
+                return 'red';
+              }
+            }
+          }
+        })
+        .on("mouseover", function(d) {
+          playHover(d);
+          console.log(d.time+" - "+d.text);
+        })
+        .on("mouseout",function(d) {
+          d3.select("div#playHover")
+              .attr({
+                'height':0,
+                'width':0
+              })
+        });
+
+}
 
 
 

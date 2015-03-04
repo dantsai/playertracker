@@ -3,19 +3,43 @@
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
     <link href='http://fonts.googleapis.com/css?family=Oxygen:300' rel='stylesheet' type='text/css'>
+    <link href='_css/bootstrap.css' rel='stylesheet' type='text/css'>
     <link href='_css/style.css' rel='stylesheet' type='text/css'>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
   </head>
   <title>player viz</title>
   <body>
-    <div id="textbox"><h1>David Kravish</h1></div>
-    <div id="viz">
+     <div id='stanford'>
+      <button type='button' class='btn btn-danger btn-xs'>Stefan Nastic</button>
+      <button type='button' class='btn btn-danger btn-sm'>Chasson Randle</button>
+      <button type='button' class='btn btn-danger btn-sm'>Marcus Allen</button>
+      <button type='button' class='btn btn-danger btn-sm'>Michael Humphrey</button>
+      <button type='button' class='btn btn-danger btn-sm'>Anthony Brown</button>
+      <button type='button' class='btn btn-danger btn-sm'>Reid Travis</button>
+      <button type='button' class='btn btn-danger btn-sm'>Robert Cartwright</button>
     </div>
+    <div id='cal'>
+      <button type='button' class='btn btn-primary btn-sm' onclick='drawGamePlay("Kravish"); return false;'>David Kravish</button>
+      <button type='button' class='btn btn-primary btn-sm'>Tyrone Wallace</button>
+      <button type='button' class='btn btn-primary btn-sm'>Jabari Bird</button>
+      <button type='button' class='btn btn-primary btn-sm'>Jordan Matthews</button>
+      <button type='button' class='btn btn-primary btn-sm'>Dwight Tarwater</button>
+      <button type='button' class='btn btn-primary btn-sm'>Sam Singer</button>
+      <button type='button' class='btn btn-primary btn-sm'>Kingsley Okoroh</button>
+      <button type='button' class='btn btn-primary btn-sm'>Brandon Chauca</button>
+
+    </div>
+    <div id="textbox"><h1>David Kravish</h1></div>
+    <div id="viz"><h1>Gameplay</h1></div>
+    <div id="stats"><h3>Statistics</h3></div>
+   
 
   </body>
+  
   <script type="text/javascript" src="_js/d3.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
   <script type="text/javascript" src="_js/d3.tip.js"></script>
+  <script type="text/javascript" src="_js/bootstrap.min.js"></script>
   <script type="text/javascript" src="_data/fullgame.js"></script>
   <script type="text/javascript" src="_js/viz.js"></script>
 </html>
