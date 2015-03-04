@@ -320,14 +320,24 @@ var bars = d3.select("#barviz").append("svg:svg")
 
 function mousemove() {
   // using the x value of the mouse, get the player's FG%, and team's FG% up to this point
-  // barStats = getStatsForX(d3.mouse(this)[0]);
+  barStats = getStatsForX(d3.mouse(this)[0]);
 
   // hard code them for now
-  barStats = {
-    'fgpercent': Math.random()*100,
-    'fgpercentothers': Math.random()*100
-  };
+  // barStats = {
+  //   'fgpercent': Math.random()*100,
+  //   'fgpercentothers': Math.random()*100
+  // };
   updateBars(barStats);
+}
+
+function getStatsForX(x) {
+
+  var x = Math.round((x*2400/w));
+  console.log(x);
+  return {
+    'fgpercent': fullgame[x].stats['Kravish']['fg%'],
+    'fgpercentothers': 100
+  }
 }
 
 function updateBars(barStats) {
