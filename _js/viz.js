@@ -1,6 +1,8 @@
 var m = [35, 35, 35, 45]; // margins
 var w = 1000 - m[1] - m[3]; // width
 var h = 280 - m[0] - m[2]; // height
+var barw = 600 - m[1] - m[3];
+var barh = 400 - m[1] - m[3];
 var x, y, y1, y2;
 var lineHeight = 15;
 
@@ -146,30 +148,32 @@ svg.selectAll('.playerbox')
 .attr('class', 'playerbox');
 
 // add events
-svg.selectAll('.playerevents').remove();
-svg.selectAll('.playerevents')
-.data(playerevents)
-.enter()
-.append('text')
-  .text(function(d) {
-    if(d.type == '1') {
-      return "R";
-    } else if(d.type == '2') {
-      return "S";
-    } else {
-      return "B";
-    }
-  })
-  .attr('x',function(d){
-    return w* time_to_elapsed_secs(d.time)/2400;
-  })
-  .attr('y',function(d){
-    return (h/2)-10;
-  })
-  .attr('r', function(d){
-    return 4;
-  })
-  .attr('class', 'playerevents');
+// svg.selectAll('.playerevents').remove();
+// svg.selectAll('.playerevents')
+// .data(playerevents)
+// .enter()
+// .append('text')
+//   .text(function(d) {
+//     if(d.type == '1') {
+//       return "R";
+//     } else if(d.type == '2') {
+//       return "S";
+//     } else {
+//       return "B";
+//     }
+//   })
+//   .attr('x',function(d){
+//     return w* time_to_elapsed_secs(d.time)/2400;
+//   })
+//   .attr('y',function(d){
+//     return (h/2)-10;
+//   })
+//   .attr('r', function(d){
+//     return 4;
+//   })
+//   .attr('class', 'playerevents');
+
+
 // .append('circle')
 //   .attr('cx',function(d){
 //     return w* time_to_elapsed_secs(d.time)/2400;
@@ -300,6 +304,92 @@ svg.append("text")
 
 svg.append('rect')
     .attr('id','playHover');
+
+
+// hover code - update bars
+svg.append("rect")
+  .attr({"opacity": 0, "width":w , "height":h, 'class':'focusbox', 'id':'svgfocus'})
+  .on({
+    'mousemove': mousemove
+  });
+
+var bars = d3.select("#barviz").append("svg:svg")
+      .attr("width", barw + m[1] + m[3])
+      .attr("height", barh + m[0] + m[2])
+      .attr('id', 'barsvg');
+
+function mousemove() {
+  // using the x value of the mouse, get the player's FG%, and team's FG% up to this point
+  // barStats = getStatsForX(d3.mouse(this)[0]);
+
+  // hard code them for now
+  barStats = {
+    'fgpercent': Math.random()*100,
+    'fgpercentothers': Math.random()*100
+  };
+  updateBars(barStats);
+}
+
+function updateBars(barStats) {
+  bars.selectAll('text').remove();
+
+  bars.append("text")
+    .attr("class", "playername")
+    .attr("text-anchor", "left")
+    .attr("x", 20)
+    .attr("y", 20)
+    .text("Kravish");
+  bars.append("text")
+    .attr("class", "playername")
+    .attr("text-anchor", "left")
+    .attr("x", 20)
+    .attr("y", 60)
+    .text("Rest of team");
+
+  // fg% text
+  bars.append("text")
+    .attr("class", "playername")
+    .attr("text-anchor", "left")
+    .attr("x", 360)
+    .attr("y", 20)
+    .text(parseFloat(barStats.fgpercent).toFixed(1) + ' FG %');
+  bars.append("text")
+    .attr("class", "playername")
+    .attr("text-anchor", "left")
+    .attr("x", 360)
+    .attr("y", 60)
+    .text(parseFloat(barStats.fgpercentothers).toFixed(1) + ' FG %');
+
+
+  // remove bars
+  bars.selectAll('rect').remove();
+
+
+  bars.append('rect')
+    .attr({
+      x: 150, // margin
+      y: 0,
+      height: 30,
+      width: function() {
+        return Math.round(barStats.fgpercent*2); // up to 200
+      },
+      class: 'statsbars'
+    });
+
+  bars.append('rect')
+    .attr({
+      x: 150, // margin
+      y: 40,
+      height: 30,
+      width: function() {
+        return Math.round(barStats.fgpercentothers*2); // up to 200
+      },
+      class: 'statsbars'
+    });
+}
+
+
+
 
 // # of seconds elapsed from the beginning of the game.
 function time_to_elapsed_secs(timestr) {
