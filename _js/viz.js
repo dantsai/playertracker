@@ -85,17 +85,37 @@ svg.selectAll('.playerevents').remove();
 svg.selectAll('.playerevents')
 .data(playerevents)
 .enter()
-.append('circle')
-  .attr('cx',function(d){
+.append('text')
+  .text(function(d) {
+    if(d.type == '1') {
+      return "R";
+    } else if(d.type == '2') {
+      return "S";
+    } else {
+      return "B";
+    }
+  })
+  .attr('x',function(d){
     return w* time_to_elapsed_secs(d.time)/2400;
   })
-  .attr('cy',function(d){
-    return (h/2)-15;
+  .attr('y',function(d){
+    return (h/2)-10;
   })
   .attr('r', function(d){
     return 4;
   })
   .attr('class', 'playerevents');
+// .append('circle')
+//   .attr('cx',function(d){
+//     return w* time_to_elapsed_secs(d.time)/2400;
+//   })
+//   .attr('cy',function(d){
+//     return (h/2)-15;
+//   })
+//   .attr('r', function(d){
+//     return 4;
+//   })
+//   .attr('class', 'playerevents');
 
 
 // halftime line

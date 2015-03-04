@@ -47,8 +47,13 @@ body {
 
 .playerevents {
   fill: #666;
+  font-size: 14px;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
 }
-
+/*.playerevents {
+  fill: #666;
+}
+*/
 /* CSS */
 
 html, body, #map {
