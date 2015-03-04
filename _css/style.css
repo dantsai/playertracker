@@ -50,6 +50,15 @@ body {
   fill: #000;
 }
 
+.statsbars {
+  fill: #999;
+}
+
+.playername {
+  font-size: 16px;
+  fill: #999;
+}
+
 .halftimeLine {
   stroke-width: 2px;
   stroke-dasharray: 4,5;
