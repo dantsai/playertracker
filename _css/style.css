@@ -46,26 +46,15 @@ body {
   opacity: 0.3;
 }
 
-
-ol, ul {
-  list-style: none;
+.playerevents {
+  fill: #666;
+  font-size: 14px;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
 }
-blockquote, q {
-  quotes: none;
+/*.playerevents {
+  fill: #666;
 }
-blockquote:before, blockquote:after,
-q:before, q:after {
-  content: '';
-  content: none;
-}
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-a{
-  text-decoration: none;
-}
-
+*/
 /* CSS */
 
 html, body, #map {
