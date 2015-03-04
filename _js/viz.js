@@ -162,7 +162,7 @@ bars.append('rect')
             }  
         },
         x: function(d) {
-          return x(time_to_x(d.time));
+          return x(time_to_elapsed_secs(d.time));
         },
         y: function(d) {
           if (d.event != '') {
@@ -195,7 +195,7 @@ bars.append('rect')
 //Margin of victory line
 var line = d3.svg.line()
       .x(function(d) {
-        return x(time_to_x(d.time));
+        return x(time_to_elapsed_secs(d.time));
       })
       .y(function(d) {
         return y(d.margin);
