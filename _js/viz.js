@@ -55,11 +55,7 @@ $(document).ready(function() {
   
 });
 
-<<<<<<< HEAD
-=======
-
 // draw axes
->>>>>>> master
 x = d3.scale.linear().domain([0, 2400]).range([0, w]);
 y = d3.scale.linear().domain([-20, 5]).range([h, 0]);
 var xAxis = d3.svg.axis().scale(x).ticks(0).tickSize(0,0);
