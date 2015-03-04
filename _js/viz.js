@@ -16,14 +16,14 @@ var svg = d3.select("#viz").append("svg:svg")
 
 
 $(document).ready(function() {
-  // $.each(fullgame, function(i,d) {
-  //   if (d.text.search("Kravish") != -1) {
-  //     processPlay(d);
-  //   }
-  //   else {
-  //     d.event = '';
-  //   }
-  // })
+  $.each(fullgame, function(i,d) {
+    if (d.text.search("Kravish") != -1) {
+      processPlay(d);
+    }
+    else {
+      d.event = '';
+    }
+  })
 });
 
 x = d3.scale.linear().domain([0, 2400]).range([0, w]);
@@ -108,6 +108,14 @@ bars.append('rect')
         class: function(d) {
           if (d.text.search("Kravish") != -1)
             return "kravish";
+        },
+        fill: function(d) {
+          if (d.event in ['2pts','Reb','OReb','FT','Block','Steal']) {
+            return 'green';
+          }
+          else {
+            return 'red';
+          }
         }
       })
       .on("mouseover", function(d) {
@@ -161,12 +169,30 @@ function time_to_x(timestr) {
 //   return y((d.s[stationindex].s / .6977672)*100); 
 // })
 
-// function processPlay(d) {
+function processPlay(d) {
 
-//   if (d.text.search('made Jumper'))
-//     d.
+  var play= '';
+  if (d.text.search('made Jumper')!= -1)
+    play ="2pts";
+  else if (d.text.search('missed Jumper') != -1)
+    play = 'Miss';
+  else if (d.text.search('Foul') != -1)
+    play = 'Foul';
+  else if (d.text.search('Block') != -1)
+    play = 'Blk';
+  else if (d.text.search('Defensive Rebound') != -1)
+    play = 'Reb';
+  else if (d.text.search('Ofensive Rebound') != -1)
+    play = 'OReb';
+  else if (d.text.search('Turnover') != -1)
+    play = 'TO';
+  else if (d.text.search('made Free Throw') != -1)
+    play = 'FT';
+  else if (d.text.search('missed Free Throw') != -1)
+    play = 'Missed FT';
 
-// }
+  d.event = play;
+}
 
 
 
