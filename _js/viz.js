@@ -1,7 +1,19 @@
 var m = [35, 35, 35, 45]; // margins
-var w = 1000 - m[1] - m[3]; // width
-var h = 600 - m[0] - m[2]; // height
+var w = 1200 - m[1] - m[3]; // width
+var h = 280 - m[0] - m[2]; // height
 var x, y, y1, y2;
+var lineHeight = 20;
+
+$.each(fullgame, function(i,d) {
+  // if (d.text.search("Kravish") != -1 ) {
+  //   processPlay(d);
+  // }
+  // else {
+  //   d.event = '';
+  // }
+
+  processPlay(d);
+})
 
 var kravish = [
 ["40:00","34:40"],
@@ -16,24 +28,17 @@ var svg = d3.select("#viz").append("svg:svg")
 
 
 $(document).ready(function() {
-  $.each(fullgame, function(i,d) {
-    if (d.text.search("Kravish") != -1) {
-      processPlay(d);
-    }
-    else {
-      d.event = '';
-    }
-  })
+  
 });
 
 x = d3.scale.linear().domain([0, 2400]).range([0, w]);
-y = d3.scale.linear().domain([-20, 20]).range([h, 0]);
+y = d3.scale.linear().domain([-20, 5]).range([h, 0]);
 var xAxis = d3.svg.axis().scale(x).ticks(0).tickSize(0,0);
 var yAxisLeft = d3.svg.axis().scale(y).ticks(0).tickSize(0,0).tickValues([0,25,50,75,100]).orient("left");
 
 svg.append("svg:g")
       .attr("class", "x axis")
-      .attr("transform", "translate(0," + h/2 + ")")
+      .attr("transform", "translate(0," + y(0) + ")")
       .call(xAxis);
 
 svg.append("svg:g")
@@ -70,6 +75,59 @@ svg.append("line")
 	  'class': 'halftimeLine'
 });
 
+var bars = svg.selectAll('g')
+            .data(fullgame)
+            .enter()
+            .append('g')
+
+bars.append('rect')
+      .attr({
+        width:2,
+        height: function(d) {
+          if (d.event != '') {
+          //   //if (d.text.search("Kravish") != -1)
+          //   if (d.team == 'CAL') {
+          //     return y(d.margin) - (h/2);
+          //   }
+          //   else if (d.team =='STANFORD') {
+          //     return y(d.margin)-(h/2);
+          //   }
+          // }
+            return lineHeight;
+            }  
+        },
+        x: function(d) {
+          return x(time_to_x(d.time));
+        },
+        y: function(d) {
+          if (d.event != '') {
+            if (d.team =='CAL')
+              return 0;
+            else if(d.team == 'STANFORD')
+              return h - lineHeight;
+          }
+          // return h - y(d.margin);
+        },
+        class: function(d) {
+          if (d.text.search("Kravish") != -1)
+            return "kravish";
+        },
+        fill: function(d) {
+          if (d.event != '') {
+            if ($.inArray(d.event,['3pt','Stl','2pts','Reb','OReb','FT','Block','Steal'])!=-1) {
+              return 'green';
+            }
+            else {
+              return 'red';
+            }
+          }
+        }
+      })
+      .on("mouseover", function(d) {
+        console.log(d.time+" - "+d.text);
+      });
+
+//Margin of victory line
 var line = d3.svg.line()
       .x(function(d) {
         return x(time_to_x(d.time));
@@ -84,69 +142,30 @@ svg.append('path')
   .attr('class','line')
   .attr("d",line);
 
-
-var bars = svg.selectAll('g')
-            .data(fullgame)
-            .enter()
-            .append('g')
-
-bars.append('rect')
-      .attr({
-        width:1,
-        height: function(d) {
-          if (d.text.search("Kravish") != -1)
-            return y(d.margin) - (h/2);
-          else
-            return y(0) - (h/2);
-        },
-        x: function(d) {
-          return x(time_to_x(d.time));
-        },
-        y: function(d) {
-          return h - y(d.margin);
-        },
-        class: function(d) {
-          if (d.text.search("Kravish") != -1)
-            return "kravish";
-        },
-        fill: function(d) {
-          if (d.event in ['2pts','Reb','OReb','FT','Block','Steal']) {
-            return 'green';
-          }
-          else {
-            return 'red';
-          }
-        }
-      })
-      .on("mouseover", function(d) {
-        console.log(d.time+" - "+d.text);
-      });
-
-
 // x axis labels
 svg.append("text")
   .attr("class", "axislabel timetext")
   .attr("text-anchor", "middle")
   .attr("x", 20)
-  .attr("y", h/2 + 15)
+  .attr("y", y(0) + 15)
   .text("20:00");
 svg.append("text")
   .attr("class", "axislabel timetext")
   .attr("text-anchor", "middle")
   .attr("x", w/4 + 20)
-  .attr("y", h/2 + 15)
+  .attr("y", y(0) + 15)
   .text("10:00");
 svg.append("text")
   .attr("class", "axislabel timetext")
   .attr("text-anchor", "middle")
   .attr("x", w/2+20)
-  .attr("y", h/2 + 15)
+  .attr("y", y(0) + 15)
   .text("20:00");
 svg.append("text")
   .attr("class", "axislabel timetext")
   .attr("text-anchor", "middle")
   .attr("x", 3*w/4 + 20)
-  .attr("y", h/2 + 15)
+  .attr("y", y(0) + 15)
   .text("10:00");
 
 
@@ -182,7 +201,7 @@ function processPlay(d) {
     play = 'Blk';
   else if (d.text.search('Defensive Rebound') != -1)
     play = 'Reb';
-  else if (d.text.search('Ofensive Rebound') != -1)
+  else if (d.text.search('Offensive Rebound') != -1)
     play = 'OReb';
   else if (d.text.search('Turnover') != -1)
     play = 'TO';
@@ -190,8 +209,21 @@ function processPlay(d) {
     play = 'FT';
   else if (d.text.search('missed Free Throw') != -1)
     play = 'Missed FT';
+  else if (d.text.search('made Layup') != -1)
+    play = '2pts';
+  else if (d.text.search('missed Layup') != -1)
+    play = 'Miss';
+  else if (d.text.search('made Three Point') != -1)
+    play = '3pt';
+  else if (d.text.search('missed Three Point') != -1)
+    play = 'Miss 3pt';
+  else if (d.text.search('Steal') != -1)
+    play = 'Stl';
+  else if (d.text.search('Dunk') != -1)
+    play = '2pts';
 
   d.event = play;
+  // console.log(d);
 }
 
 
