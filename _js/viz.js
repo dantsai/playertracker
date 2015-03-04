@@ -4,17 +4,68 @@ var h = 280 - m[0] - m[2]; // height
 var x, y, y1, y2;
 var lineHeight = 15;
 
+var calPlayers = ['Kravish','Wallace','Bird','Singer','Tarwater','Matthews','Okoroh','Chauca'];
+
+var stanfordPlayers = ['Nastic','Randle','Allen','Humphrey','Brown','Travis','Cartwright'];
+
+var playersStats = {
+    'Kravish': {
+      'pts': 0,
+      'fgatt':0,
+      'fg':0,
+      'fg%':0,
+      '3pt':0,
+      '3ptatt':0,
+      '3pt%':0,
+      'reb':0,
+      'oreb':0,
+      'fouls':0,
+      'ast':0,
+      'stl':0,
+      'ft':0,
+      'ftatt':0,
+      'ft%':0,
+      'blk':0,
+      'to':0
+    }
+}
+
 var selectPlayers = [];
 
+fullgame[0].stats = {'Kravish': {
+      'pts': 0,
+      'fgatt':0,
+      'fg':0,
+      'fg%':0,
+      '3pt':0,
+      '3ptatt':0,
+      '3pt%':0,
+      'reb':0,
+      'oreb':0,
+      'fouls':0,
+      'ast':0,
+      'stl':0,
+      'ft':0,
+      'ftatt':0,
+      'ft%':0,
+      'blk':0,
+      'to':0
+    }};
+
 $.each(fullgame, function(i,d) {
-  // if (d.text.search("Kravish") != -1 ) {
+  // if (d.text.search("Bird") != -1 ) {
   //   processPlay(d);
   // }
   // else {
   //   d.event = '';
   // }
+  if (i > 0)
+    processPlay(i);
+  else {
+    d.event ='';
 
-  processPlay(d);
+  }
+
 })
 
 var kravish = [
@@ -192,9 +243,11 @@ bars.append('rect')
           }
         }
       })
-      .on("mouseover", function(d) {
+      .on("mouseover", function(d,i) {
         playHover(d);
         console.log(d.time+" - "+d.text);
+        // console.log(d.stats['Kravish']);
+        console.log(fullgame[i].stats['Kravish']);
       })
       .on("mouseout",function(d) {
         d3.select("div#playHover")
@@ -267,13 +320,16 @@ function time_to_elapsed_secs(timestr) {
 //   return y((d.s[stationindex].s / .6977672)*100); 
 // })
 
-function processPlay(d) {
+function processPlay(i) {
+
+  var d = fullgame[i];
+  var prev = fullgame[i-1];
 
   var play= '';
   if (d.text.search('made Jumper')!= -1)
     play ="2pts";
   else if (d.text.search('missed Jumper') != -1)
-    play = 'Miss';
+    play = 'Missed FG';
   else if (d.text.search('Foul') != -1)
     play = 'Foul';
   else if (d.text.search('Block') != -1)
@@ -295,14 +351,127 @@ function processPlay(d) {
   else if (d.text.search('made Three Point') != -1)
     play = '3pt';
   else if (d.text.search('missed Three Point') != -1)
-    play = 'Miss 3pt';
+    play = 'Missed 3pt';
   else if (d.text.search('Steal') != -1)
     play = 'Stl';
   else if (d.text.search('Dunk') != -1)
     play = '2pts';
 
   d.event = play;
-  // console.log(d);
+  d.stats ={};
+  if (d.text.search('Kravish')!=-1) {
+    d.player = 'Kravish';
+    // d.stats['Kravish'] = {
+    //   'pts': 0,
+    //   'fgatt':0,
+    //   'fg':0,
+    //   'fg%':0,
+    //   '3pt':0,
+    //   '3ptatt':0,
+    //   '3pt%':0,
+    //   'reb':0,
+    //   'oreb':0,
+    //   'fouls':0,
+    //   'ast':0,
+    //   'stl':0,
+    //   'ft':0,
+    //   'ftatt':0,
+    //   'ft%':0,
+    //   'blk':0,
+    //   'to':0
+    // };
+    
+  } 
+  d.stats['Kravish'] ={
+      'pts': prev.stats['Kravish']['pts'],
+      'fgatt':prev.stats['Kravish']['fgatt'],
+      'fg':prev.stats['Kravish']['fg'],
+      'fg%':prev.stats['Kravish']['fg%'],
+      '3pt':prev.stats['Kravish']['3pt'],
+      '3ptatt':prev.stats['Kravish']['3ptatt'],
+      '3pt%':prev.stats['Kravish']['3pt%'],
+      'reb':prev.stats['Kravish']['reb'],
+      'oreb':prev.stats['Kravish']['oreb'],
+      'fouls':prev.stats['Kravish']['fouls'],
+      'ast':prev.stats['Kravish']['ast'],
+      'stl':prev.stats['Kravish']['stl'],
+      'ft':prev.stats['Kravish']['ft'],
+      'ftatt':prev.stats['Kravish']['ftatt'],
+      'ft%':prev.stats['Kravish']['ft%'],
+      'blk':prev.stats['Kravish']['blk'],
+      'to':prev.stats['Kravish']['to']
+    }
+    // prev.stats['Kravish'];  
+  
+  
+  
+    
+  // }
+  
+  if (d.player == 'Kravish') {
+
+    if (play=='3pt') {
+      d.stats['Kravish']['pts']=prev.stats['Kravish']['pts']+3;
+      d.stats['Kravish']['3pt']=prev.stats['Kravish']['3pt']+1;
+      d.stats['Kravish']['3ptatt']=prev.stats['Kravish']['3ptatt']+1;
+      d.stats['Kravish']['fgatt']=prev.stats['Kravish']['fgatt']+1;
+      d.stats['Kravish']['fg']=prev.stats['Kravish']['fg']+1;
+      d.stats['Kravish']['3pt%']=(d.stats['Kravish']['3pt']/d.stats['Kravish']['3ptatt']);
+      d.stats['Kravish']['fg%']=(d.stats['Kravish']['fg']/d.stats['Kravish']['fgatt']);
+    }
+    else if (play=='2pts') {
+      d.stats['Kravish']['fg']=prev.stats['Kravish']['fg']+1;
+      d.stats['Kravish']['fgatt']=prev.stats['Kravish']['fgatt']+1;
+      d.stats['Kravish']['fg%']=(d.stats['Kravish']['fg']/d.stats['Kravish']['fgatt'])*100.00;
+      d.stats['Kravish']['pts']=prev.stats['Kravish']['pts']+2;
+    }
+    else if (play=='Missed FG') {
+      d.stats['Kravish']['fg']=prev.stats['Kravish']['fg'];
+      d.stats['Kravish']['fgatt']=prev.stats['Kravish']['fgatt']+1;
+      d.stats['Kravish']['fg%']=(d.stats['Kravish']['fg']/d.stats['Kravish']['fgatt'])*100.00;
+      d.stats['Kravish']['pts']=prev.stats['Kravish']['pts'];
+    }
+    else if (play=='Missed 3pt') {
+      d.stats['Kravish']['3pt']=prev.stats['Kravish']['3pt'];
+      d.stats['Kravish']['3ptatt']=prev.stats['Kravish']['3ptatt']+1;
+      d.stats['Kravish']['3pt%']=(d.stats['Kravish']['3pt']/d.stats['Kravish']['3ptatt'])*100.00;
+      d.stats['Kravish']['pts']=prev.stats['Kravish']['pts'];
+    }
+    else if (play=='FT') {
+      d.stats['Kravish']['ft']=prev.stats['Kravish']['ft']+1;
+      d.stats['Kravish']['ftatt']=prev.stats['Kravish']['ftatt']+1;
+      d.stats['Kravish']['ft%']=(d.stats['Kravish']['ft']/d.stats['Kravish']['ftatt'])*100.0;
+    }
+    else if (play=='Missed FT') {
+      d.stats['Kravish']['ftatt']=prev.stats['Kravish']['ftatt']+1;
+      d.stats['Kravish']['ft']=prev.stats['Kravish']['ft'];
+      d.stats['Kravish']['ft%']=(d.stats['Kravish']['ft']/d.stats['Kravish']['ftatt'])*100.0;
+    }
+    else if (play=='Blk') {
+      d.stats['Kravish']['blk']=prev.stats['Kravish']['blk']+1;
+    }
+    else if (play=='Stl') {
+      d.stats['Kravish']['stl']=prev.stats['Kravish']['stl']+1;
+    }
+    else if (play=='Reb') {
+      d.stats['Kravish']['reb']=prev.stats['Kravish']['reb']+1;
+    }
+    else if (play=='OReb') {
+      d.stats['Kravish']['reb']=prev.stats['Kravish']['reb']+1;
+      d.stats['Kravish']['oreb']=prev.stats['Kravish']['oreb']+1;
+    }
+    else if (play=='TO') {
+      d.stats['Kravish']['to']=prev.stats['Kravish']['to']+1;
+    }
+    else if (play=='Foul') {
+      d.stats['Kravish']['fouls']=prev.stats['Kravish']['fouls']+1;
+    }
+    console.log(i);
+    console.log(d.stats['Kravish'])
+    
+    // fullgame[i] = d;
+    console.log(fullgame[i].stats['Kravish']);
+  }
 }
 
 
