@@ -348,8 +348,8 @@ function getStatsForX(x) {
   var x = Math.round((x*2400/w));
 
   $("#playerstats").html(JSON.stringify(fullgame[x].stats.Kravish));
-  // if (JSON.stringify(fullgame[x].text != '')
-    $("#playbyplay").html(JSON.stringify(fullgame[x].stats.Kravish.time+" - "+JSON.stringify(fullgame[x].stats.Kravish.text)));
+  // if (JSON.stringify(fullgame[x].text != ''))
+  //   $("#playbyplay").html(JSON.stringify(fullgame[x].stats.Kravish.time+" - "+JSON.stringify(fullgame[x].stats.Kravish.text)));
   return {
     'fgpercent': fullgame[x].stats['Kravish']['fg%'],
     'fgpercentothers': 100
