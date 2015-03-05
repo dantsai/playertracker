@@ -34,7 +34,7 @@ body {
 
 #viz,
 #stats {
-  display: inline-block;
+  /*display: inline-block;*/
   vertical-align: top;
 }
 
@@ -172,7 +172,7 @@ path.score {
   stroke-width: 2.0px;
 }
 
-rect.gameplay:hover {
+.gameplay:hover {
   cursor: pointer;
 }
 
@@ -183,4 +183,15 @@ rect.gameplay:hover {
 
 #playHover {
   fill: silver;
+}
+
+#timeIndicator {
+  fill: ghostwhite;
+}
+
+#playbyplay,
+#playerstats {
+  height: 40px;
+  display: inline-block;
+  font-size: 12pt;
 }

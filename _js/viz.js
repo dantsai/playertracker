@@ -55,18 +55,16 @@ fullgame[0].stats = {'Kravish': {
     }};
 
 $.each(fullgame, function(i,d) {
-  // if (d.text.search("Bird") != -1 ) {
-  //   processPlay(d);
-  // }
-  // else {
-  //   d.event = '';
-  // }
-  if (i > 0)
+  if (i >0 ) {
+    // if (d.text.search("Kravish") != -1) {
+    //   processPlay(d);
+    // }
     processPlay(i);
-  else {
-    d.event ='';
-
   }
+  else {
+    d.event = '';
+  }
+ 
 
 })
 
@@ -197,12 +195,25 @@ svg.append("line")
 	  'class': 'halftimeLine'
 });
 
-var bars = svg.selectAll('g')
+var bars2 = d3.select("#barviz").append("svg:svg")
+      .attr("width", barw + m[1] + m[3])
+      .attr("height", barh + m[0] + m[2])
+      .attr('id', 'barsvg');
+
+// hover code - update bars
+svg.append("rect")
+  .attr({"opacity": 0, "width":w , "height":h, 'class':'focusbox', 'id':'svgfocus'})
+  .on({
+    'mousemove': mousemove
+  });
+
+
+var playbars = svg.selectAll('g')
             .data(fullgame)
             .enter()
-            .append('g')
+            .append('g')            
 
-bars.append('rect')
+playbars.append('rect')
       .attr({
         width:2,
         height: function(d) {
@@ -250,15 +261,18 @@ bars.append('rect')
       .on("mouseover", function(d,i) {
         playHover(d);
         console.log(d.time+" - "+d.text);
+        console.log(d.stats.Kravish)
         // console.log(d.stats['Kravish']);
-        console.log(fullgame[i].stats['Kravish']);
+        // console.log(fullgame[i].stats['Kravish']);
+        $("#playbyplay").html(d.time+" - "+d.text);
       })
       .on("mouseout",function(d) {
-        d3.select("div#playHover")
+        d3.select("rect#playHover")
             .attr({
               'height':0,
               'width':0
-            })
+            });
+        $("#playbyplay").html('')
       });
 
 //Margin of victory line
@@ -305,35 +319,37 @@ svg.append("text")
 svg.append('rect')
     .attr('id','playHover');
 
+svg.append('timelineIndicator')
+    .attr('id','timeIndicator');
 
-// hover code - update bars
-svg.append("rect")
-  .attr({"opacity": 0, "width":w , "height":h, 'class':'focusbox', 'id':'svgfocus'})
-  .on({
-    'mousemove': mousemove
-  });
 
-var bars = d3.select("#barviz").append("svg:svg")
-      .attr("width", barw + m[1] + m[3])
-      .attr("height", barh + m[0] + m[2])
-      .attr('id', 'barsvg');
+
+
 
 function mousemove() {
   // using the x value of the mouse, get the player's FG%, and team's FG% up to this point
   barStats = getStatsForX(d3.mouse(this)[0]);
 
-  // hard code them for now
-  // barStats = {
-  //   'fgpercent': Math.random()*100,
-  //   'fgpercentothers': Math.random()*100
-  // };
+  d3.select("rect#playHover")
+            .attr({
+              'x':d3.mouse(this)[0],
+              'width':2,
+              'y':lineHeight,
+              'height': h-(lineHeight*2)
+            });
   updateBars(barStats);
 }
 
 function getStatsForX(x) {
 
+  console.log(fullgame[x].stats.Kravish)
+  
+
   var x = Math.round((x*2400/w));
-  console.log(x);
+
+  $("#playerstats").html(JSON.stringify(fullgame[x].stats.Kravish));
+  // if (JSON.stringify(fullgame[x].text != '')
+    $("#playbyplay").html(JSON.stringify(fullgame[x].stats.Kravish.time+" - "+JSON.stringify(fullgame[x].stats.Kravish.text)));
   return {
     'fgpercent': fullgame[x].stats['Kravish']['fg%'],
     'fgpercentothers': 100
@@ -341,15 +357,15 @@ function getStatsForX(x) {
 }
 
 function updateBars(barStats) {
-  bars.selectAll('text').remove();
+  bars2.selectAll('text').remove();
 
-  bars.append("text")
+  bars2.append("text")
     .attr("class", "playername")
     .attr("text-anchor", "left")
     .attr("x", 20)
     .attr("y", 20)
     .text("Kravish");
-  bars.append("text")
+  bars2.append("text")
     .attr("class", "playername")
     .attr("text-anchor", "left")
     .attr("x", 20)
@@ -357,13 +373,13 @@ function updateBars(barStats) {
     .text("Rest of team");
 
   // fg% text
-  bars.append("text")
+  bars2.append("text")
     .attr("class", "playername")
     .attr("text-anchor", "left")
     .attr("x", 360)
     .attr("y", 20)
     .text(parseFloat(barStats.fgpercent).toFixed(1) + ' FG %');
-  bars.append("text")
+  bars2.append("text")
     .attr("class", "playername")
     .attr("text-anchor", "left")
     .attr("x", 360)
@@ -372,10 +388,10 @@ function updateBars(barStats) {
 
 
   // remove bars
-  bars.selectAll('rect').remove();
+  bars2.selectAll('rect').remove();
 
 
-  bars.append('rect')
+  bars2.append('rect')
     .attr({
       x: 150, // margin
       y: 0,
@@ -386,7 +402,7 @@ function updateBars(barStats) {
       class: 'statsbars'
     });
 
-  bars.append('rect')
+  bars2.append('rect')
     .attr({
       x: 150, // margin
       y: 40,
@@ -461,26 +477,6 @@ function processPlay(i) {
   d.stats ={};
   if (d.text.search('Kravish')!=-1) {
     d.player = 'Kravish';
-    // d.stats['Kravish'] = {
-    //   'pts': 0,
-    //   'fgatt':0,
-    //   'fg':0,
-    //   'fg%':0,
-    //   '3pt':0,
-    //   '3ptatt':0,
-    //   '3pt%':0,
-    //   'reb':0,
-    //   'oreb':0,
-    //   'fouls':0,
-    //   'ast':0,
-    //   'stl':0,
-    //   'ft':0,
-    //   'ftatt':0,
-    //   'ft%':0,
-    //   'blk':0,
-    //   'to':0
-    // };
-    
   } 
   d.stats['Kravish'] ={
       'pts': prev.stats['Kravish']['pts'],
@@ -501,12 +497,6 @@ function processPlay(i) {
       'blk':prev.stats['Kravish']['blk'],
       'to':prev.stats['Kravish']['to']
     }
-    // prev.stats['Kravish'];  
-  
-  
-  
-    
-  // }
   
   if (d.player == 'Kravish') {
 
@@ -566,11 +556,11 @@ function processPlay(i) {
     else if (play=='Foul') {
       d.stats['Kravish']['fouls']=prev.stats['Kravish']['fouls']+1;
     }
-    console.log(i);
-    console.log(d.stats['Kravish'])
+    // console.log(i);
+    // console.log(d.stats['Kravish'])
     
     // fullgame[i] = d;
-    console.log(fullgame[i].stats['Kravish']);
+    // console.log(fullgame[i].stats['Kravish']);
   }
 }
 
@@ -600,72 +590,72 @@ function playHover(d) {
       })
 }
 
-function drawGamePlay(lastname) {
-  svg.selectAll('rect.gameplay').remove();
+// function drawGamePlay(lastname) {
+//   svg.selectAll('rect.gameplay').remove();
 
-  var bars = svg.selectAll('g')
-          .data(fullgame)
-          .enter()
-          .append('g');
+//   var bars = svg.selectAll('g')
+//           .data(fullgame)
+//           .enter()
+//           .append('g');
 
-  bars.append('rect')
-        .attr({
-          width:2,
-          height: function(d) {
-            if (d.event != '') {
-            //   //if (d.text.search("Kravish") != -1)
-            //   if (d.team == 'CAL') {
-            //     return y(d.margin) - (h/2);
-            //   }
-            //   else if (d.team =='STANFORD') {
-            //     return y(d.margin)-(h/2);
-            //   }
-            // }
-              return lineHeight;
-              }  
-          },
-          x: function(d) {
-            return x(time_to_elapsed_secs(d.time));
-          },
-          y: function(d) {
-            if (d.event != '') {
-              if (d.team =='CAL')
-                return 0;
-              else if(d.team == 'STANFORD')
-                return h - lineHeight;
-            }
-            // return h - y(d.margin);
-          },
-          class: function(d) {
-            var classes = 'gameplay '+d.team;
-            if (d.text.search("Kravish") != -1)
-              classes+= "kravish";
-            return classes;
-          },
-          fill: function(d) {
-            if (d.event != '') {
-              if ($.inArray(d.event,['3pt','Stl','2pts','Reb','OReb','FT','Block','Steal'])!=-1) {
-                return 'green';
-              }
-              else {
-                return 'red';
-              }
-            }
-          }
-        })
-        .on("mouseover", function(d) {
-          playHover(d);
-          console.log(d.time+" - "+d.text);
-        })
-        .on("mouseout",function(d) {
-          d3.select("div#playHover")
-              .attr({
-                'height':0,
-                'width':0
-              })
-        });
+//   bars.append('rect')
+//         .attr({
+//           width:2,
+//           height: function(d) {
+//             if (d.event != '') {
+//             //   //if (d.text.search("Kravish") != -1)
+//             //   if (d.team == 'CAL') {
+//             //     return y(d.margin) - (h/2);
+//             //   }
+//             //   else if (d.team =='STANFORD') {
+//             //     return y(d.margin)-(h/2);
+//             //   }
+//             // }
+//               return lineHeight;
+//               }  
+//           },
+//           x: function(d) {
+//             return x(time_to_elapsed_secs(d.time));
+//           },
+//           y: function(d) {
+//             if (d.event != '') {
+//               if (d.team =='CAL')
+//                 return 0;
+//               else if(d.team == 'STANFORD')
+//                 return h - lineHeight;
+//             }
+//             // return h - y(d.margin);
+//           },
+//           class: function(d) {
+//             var classes = 'gameplay '+d.team;
+//             if (d.text.search("Kravish") != -1)
+//               classes+= "kravish";
+//             return classes;
+//           },
+//           fill: function(d) {
+//             if (d.event != '') {
+//               if ($.inArray(d.event,['3pt','Stl','2pts','Reb','OReb','FT','Block','Steal'])!=-1) {
+//                 return 'green';
+//               }
+//               else {
+//                 return 'red';
+//               }
+//             }
+//           }
+//         })
+//         .on("mouseover", function(d) {
+//           playHover(d);
+//           console.log(d.time+" - "+d.text);
+//         })
+//         .on("mouseout",function(d) {
+//           d3.select("div#playHover")
+//               .attr({
+//                 'height':0,
+//                 'width':0
+//               })
+//         });
 
-}
+// }
 
 
 
